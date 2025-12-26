@@ -1,0 +1,32 @@
+{
+  "name": "NutraGenAI - Your Healthy Eating Companion",
+  "short_name": "NutraGenAI",
+  "description": "AI-powered nutrition and healthy lifestyle assistant with personalized meal planning, recipe generation, and health insights.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#22c55e",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "40x40",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "32x32",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": [
+    "health",
+    "lifestyle",
+    "food",
+    "fitness"
+  ],
+  "lang": "en",
+  "dir": "ltr"
+}
