@@ -93,7 +93,7 @@ export default function Dashboard() {
             <Logo size="lg" />
           </div>
           <div className="space-y-1">
-            <h1 className="text-2xl sm:text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60 italic leading-tight">
+            <h1 className="text-2xl sm:text-4xl font-black text-gradient italic leading-tight pb-1">
               Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}{profile?.name ? `, ${profile.name}` : ''}!
             </h1>
             <p className="text-sm sm:text-base text-muted-foreground font-semibold flex items-center gap-2">
