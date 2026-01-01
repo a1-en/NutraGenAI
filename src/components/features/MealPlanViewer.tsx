@@ -17,8 +17,12 @@ import {
   Grape,
   Share2,
   FileDown,
-  ChevronDown
+  ChevronDown,
+  CheckCircle2
 } from 'lucide-react'
+import { useUserStore } from '@/store/userStore'
+import { useMealStore } from '@/store/mealStore'
+import { generateId } from '@/lib/utils'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
@@ -34,6 +38,36 @@ interface MealPlanViewerProps {
 
 export default function MealPlanViewer({ mealPlan, onEdit, onRegenerate }: MealPlanViewerProps) {
   const [selectedDay, setSelectedDay] = useState(0)
+  const [showToast, setShowToast] = useState(false)
+  const [toastMessage, setToastMessage] = useState('')
+
+  const { profile } = useUserStore()
+  const { addFoodLog } = useMealStore()
+
+  const handleLogMeal = (meal: Meal) => {
+    const foodLog = {
+      id: generateId(),
+      userId: profile?.id || 'guest',
+      date: new Date(),
+      mealType: meal.type,
+      food: {
+        id: meal.id,
+        name: meal.name,
+        nutrition: meal.totalNutrition,
+        servingSize: '1 meal',
+        servingWeight: 400,
+        category: 'other' as any
+      },
+      quantity: 1,
+      nutrition: meal.totalNutrition,
+      loggedAt: new Date()
+    }
+
+    addFoodLog(foodLog)
+    setToastMessage(`${meal.name} logged successfully!`)
+    setShowToast(true)
+    setTimeout(() => setShowToast(false), 3000)
+  }
 
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
   const selectedDayData = mealPlan.meals[selectedDay]
@@ -120,7 +154,11 @@ export default function MealPlanViewer({ mealPlan, onEdit, onRegenerate }: MealP
           <Button size="sm" variant="outline" className="button-hover hover-lift flex-1 rounded-xl bg-background/40">
             Details
           </Button>
-          <Button size="sm" className="button-hover gradient-primary hover-lift flex-1 rounded-xl text-white shadow-md shadow-primary/20">
+          <Button
+            size="sm"
+            className="button-hover gradient-primary hover-lift flex-1 rounded-xl text-white shadow-md shadow-primary/20"
+            onClick={() => handleLogMeal(meal)}
+          >
             Log Meal
           </Button>
         </div>
@@ -292,6 +330,16 @@ export default function MealPlanViewer({ mealPlan, onEdit, onRegenerate }: MealP
           </div>
         </div>
       </div>
+
+      {/* Toast Notification */}
+      {showToast && (
+        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[200] animate-in slide-in-from-bottom-5 fade-in duration-300">
+          <div className="bg-emerald-500 text-white px-8 py-4 rounded-2xl shadow-2xl font-black flex items-center gap-3">
+            <CheckCircle2 className="w-6 h-6" />
+            {toastMessage}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

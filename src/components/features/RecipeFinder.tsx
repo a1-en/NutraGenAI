@@ -6,7 +6,7 @@ import { useMealStore } from '@/store/mealStore'
 import { aiService } from '@/lib/ai'
 import { cn, generateId } from '@/lib/utils'
 
-import { Search, Plus, Minus, Clock, Users, ChefHat, Loader2, Heart, X, Flame, Zap, BarChart3 } from 'lucide-react'
+import { Search, Plus, Minus, Clock, Users, ChefHat, Loader2, Heart, X, Flame, Zap, BarChart3, CheckCircle2 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -29,6 +29,36 @@ export default function RecipeFinder() {
   const [currentIngredient, setCurrentIngredient] = useState('')
   const [servings, setServings] = useState(4)
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null)
+  const [showToast, setShowToast] = useState(false)
+  const [toastMessage, setToastMessage] = useState('')
+
+  const { addFoodLog } = useMealStore()
+
+  const handleLogMeal = (recipe: Recipe) => {
+    const foodLog = {
+      id: generateId(),
+      userId: profile?.id || 'guest',
+      date: new Date(),
+      mealType: 'lunch' as any, // Default to lunch for now
+      food: {
+        id: recipe.id,
+        name: recipe.name,
+        nutrition: recipe.nutrition,
+        servingSize: '1 serving',
+        servingWeight: 300,
+        category: 'other' as any
+      },
+      quantity: 1,
+      nutrition: recipe.nutrition,
+      loggedAt: new Date()
+    }
+
+    addFoodLog(foodLog)
+    setToastMessage(`${recipe.name} logged successfully!`)
+    setShowToast(true)
+    setTimeout(() => setShowToast(false), 3000)
+    setSelectedRecipe(null)
+  }
 
   const handleAddIngredient = () => {
     if (currentIngredient.trim() && !ingredients.includes(currentIngredient.trim())) {
@@ -520,15 +550,22 @@ export default function RecipeFinder() {
               </Button>
               <Button
                 className="flex-1 h-12 sm:h-14 rounded-xl sm:rounded-2xl gradient-primary text-white font-black text-sm sm:text-base shadow-xl shadow-primary/20"
-                onClick={() => {
-                  // Logic to add to meal plan can go here
-                  setSelectedRecipe(null);
-                }}
+                onClick={() => handleLogMeal(selectedRecipe)}
               >
                 LOG AS MEAL
               </Button>
             </div>
           </Card>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {showToast && (
+        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[200] animate-in slide-in-from-bottom-5 fade-in duration-300">
+          <div className="bg-emerald-500 text-white px-8 py-4 rounded-2xl shadow-2xl font-black flex items-center gap-3">
+            <CheckCircle2 className="w-6 h-6" />
+            {toastMessage}
+          </div>
         </div>
       )}
     </div>
