@@ -173,15 +173,21 @@ export default function Navigation({ isCollapsed = false, toggleSidebar }: Navig
         {/* Mobile menu overlay */}
         {isMobileMenuOpen && (
           <div className="fixed inset-0 z-40 lg:hidden">
-            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onClick={() => setIsMobileMenuOpen(false)} />
+            <div
+              className="fixed inset-0 bg-background/80 backdrop-blur-sm transition-opacity"
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
 
-            <div className="fixed inset-y-0 left-0 z-50 w-[80%] max-w-sm glass-panel border-r border-border/40 shadow-2xl slide-in-left">
-              <div className="flex items-center h-20 px-6 gradient-primary" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
-                <Logo size="lg" showText={true} className="text-white" />
+            <div className="fixed inset-y-0 left-0 z-50 w-[85%] max-w-xs glass-panel border-r border-border/40 shadow-2xl slide-in-left flex flex-col">
+              <div className="flex items-center justify-between h-20 px-6 gradient-primary text-white shrink-0" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+                <Logo size="lg" showText={true} />
+                <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(false)} className="text-white hover:bg-white/20">
+                  <X className="w-5 h-5" />
+                </Button>
               </div>
 
-              <div className="flex-1 flex flex-col pt-6 pb-4 overflow-y-auto bg-background/95 backdrop-blur-xl h-full">
-                <nav className="mt-2 flex-1 px-4 space-y-2">
+              <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6">
+                <nav className="space-y-1.5">
                   {navigation.map((item) => {
                     const isActive = pathname === item.href
                     return (
@@ -190,26 +196,42 @@ export default function Navigation({ isCollapsed = false, toggleSidebar }: Navig
                         href={item.href}
                         onClick={() => setIsMobileMenuOpen(false)}
                         className={cn(
-                          'group flex items-center px-4 py-3.5 text-sm font-medium rounded-xl transition-all duration-300 relative overflow-hidden',
+                          'group flex items-center px-4 py-4 text-sm font-semibold rounded-2xl transition-all duration-300 relative overflow-hidden',
                           isActive
-                            ? 'text-primary-foreground shadow-md'
+                            ? 'text-primary-foreground shadow-md scale-[1.02]'
                             : 'text-muted-foreground hover:bg-accent hover:text-foreground'
                         )}
                       >
                         {isActive && (
-                          <div className="absolute inset-0 gradient-primary opacity-100" />
+                          <div className="absolute inset-0 gradient-primary" />
                         )}
                         <item.icon
                           className={cn(
                             'mr-4 flex-shrink-0 h-5 w-5 relative z-10',
-                            isActive ? 'text-primary-foreground' : 'text-muted-foreground'
+                            isActive ? 'text-primary-foreground text-white' : 'text-muted-foreground group-hover:text-primary transition-colors'
                           )}
                         />
-                        <span className="font-semibold relative z-10">{item.name}</span>
+                        <span className="relative z-10">{item.name}</span>
+                        {isActive && (
+                          <div className="ml-auto w-1.5 h-1.5 bg-white rounded-full relative z-10 shadow-sm" />
+                        )}
                       </Link>
                     )
                   })}
                 </nav>
+
+                <div className="pt-6 border-t border-border/40">
+                  <div className="p-5 rounded-3xl bg-primary/5 border border-primary/10">
+                    <p className="text-xs font-bold text-primary mb-1 uppercase tracking-widest">NutraGenAI Pro</p>
+                    <p className="text-xs text-muted-foreground mb-4 font-medium">Unlock all features and AI capabilities</p>
+                    <Button className="w-full gradient-primary text-xs font-black h-10 rounded-xl shadow-lg shadow-primary/20">Upgrade Now</Button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-6 border-t border-border/40 shrink-0 flex items-center justify-between">
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-tighter">Theme Selection</p>
+                <ThemeToggle />
               </div>
             </div>
           </div>

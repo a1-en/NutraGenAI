@@ -211,7 +211,7 @@ export default function RecipeFinder() {
 
                   <div className="relative group">
                     <div className={cn(
-                      "absolute -inset-0.5 bg-gradient-primary rounded-2xl blur opacity-0 transition duration-500 group-focus-within:opacity-30",
+                      "absolute -inset-0.5 gradient-primary rounded-2xl blur opacity-0 transition duration-500 group-focus-within:opacity-30",
                       currentIngredient.trim() && "opacity-20"
                     )} />
                     <div className="relative flex items-center gap-3">

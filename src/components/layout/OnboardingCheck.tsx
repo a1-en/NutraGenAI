@@ -42,7 +42,7 @@ export default function OnboardingCheck({ children }: OnboardingCheckProps) {
             <div className="text-sm text-muted-foreground">Preparing your personalized experience...</div>
           </div>
           <div className="w-32 h-1 bg-muted rounded-full overflow-hidden">
-            <div className="h-full bg-gradient-primary rounded-full animate-pulse"></div>
+            <div className="h-full gradient-primary rounded-full animate-pulse"></div>
           </div>
         </div>
       </div>

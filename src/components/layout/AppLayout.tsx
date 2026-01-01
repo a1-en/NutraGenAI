@@ -21,15 +21,15 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
       {/* Main content */}
       <div className={cn(
-        "flex-1 relative transition-all duration-300",
+        "flex-1 relative transition-all duration-300 h-screen overflow-y-auto overflow-x-hidden",
         isSidebarCollapsed ? "lg:pl-20" : "lg:pl-72"
       )}>
-        {/* Mobile header space */}
-        <div className="lg:hidden" style={{ height: 'calc(4rem + env(safe-area-inset-top, 0px))' }} />
+        {/* Mobile header space - Adjust for mobile nav bar */}
+        <div className="lg:hidden h-16" style={{ height: 'calc(4rem + env(safe-area-inset-top, 0px))' }} />
 
         {/* Page content */}
-        <main className="flex-1 focus:outline-none relative z-10">
-          <div className="py-6 px-4 lg:px-8 max-w-7xl mx-auto">
+        <main className="flex-1 relative z-10 w-full">
+          <div className="py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto min-h-[calc(100vh-4rem)]">
             <div className="slide-in-up">
               {children}
             </div>

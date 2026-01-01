@@ -2,12 +2,13 @@
 
 import { useState, useMemo } from 'react'
 import { useUserStore } from '@/store/userStore'
+import { cn } from '@/lib/utils'
 
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  BarChart3, 
-  PieChart, 
+import {
+  TrendingUp,
+  TrendingDown,
+  BarChart3,
+  PieChart,
   Target,
   Award,
   Activity
@@ -15,13 +16,13 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 import { Button } from '@/components/ui/button'
-import { 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   PieChart as RechartsPieChart,
   Pie,
@@ -64,7 +65,7 @@ export default function HealthInsights() {
 
   const weeklyData = useMemo(() => generateMockWeeklyData(), [])
   const monthlyData = useMemo(() => generateMockMonthlyData(), [])
-  
+
   const currentData = timeframe === 'week' ? weeklyData : monthlyData
 
   // Calculate trends
@@ -102,7 +103,7 @@ export default function HealthInsights() {
       },
       { protein: 0, carbs: 0, fat: 0 }
     )
-    
+
     const count = currentData.length
     return [
       { name: 'Protein', value: Math.round(avgData.protein / count), color: '#8884d8' },
@@ -115,9 +116,9 @@ export default function HealthInsights() {
   const insights = useMemo(() => {
     const avgCalories = currentData.reduce((sum, day) => sum + day.calories, 0) / currentData.length
     const targetCalories = 2000 // This would come from user profile
-    
+
     const insights = []
-    
+
     if (avgCalories > targetCalories * 1.1) {
       insights.push({
         type: 'warning',
@@ -158,25 +159,25 @@ export default function HealthInsights() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-primary">Health Insights</h2>
-          <p className="text-muted-foreground">Track your nutrition trends and progress</p>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-primary tracking-tight italic">Health Insights</h2>
+          <p className="text-sm sm:text-base text-muted-foreground font-medium">Track your nutrition trends and progress</p>
         </div>
-        <div className="flex space-x-2">
-          <Button 
-            variant={timeframe === 'week' ? 'default' : 'outline'}
+        <div className="flex bg-muted/30 p-1.5 rounded-2xl w-fit">
+          <Button
+            variant={timeframe === 'week' ? 'default' : 'ghost'}
             onClick={() => setTimeframe('week')}
             size="sm"
-            className="button-hover hover-lift"
+            className={cn("rounded-xl transition-all", timeframe === 'week' ? "gradient-primary text-white shadow-lg" : "hover:bg-primary/5 text-muted-foreground")}
           >
             Week
           </Button>
-          <Button 
-            variant={timeframe === 'month' ? 'default' : 'outline'}
+          <Button
+            variant={timeframe === 'month' ? 'default' : 'ghost'}
             onClick={() => setTimeframe('month')}
             size="sm"
-            className="button-hover hover-lift"
+            className={cn("rounded-xl transition-all", timeframe === 'month' ? "gradient-primary text-white shadow-lg" : "hover:bg-primary/5 text-muted-foreground")}
           >
             Month
           </Button>
@@ -279,13 +280,17 @@ export default function HealthInsights() {
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={currentData}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey={timeframe === 'week' ? 'day' : 'date'} />
+                <XAxis
+                  dataKey={timeframe === 'week' ? 'day' : 'date'}
+                  minTickGap={timeframe === 'week' ? 10 : 30}
+                  tick={{ fontSize: 10 }}
+                />
                 <YAxis />
                 <Tooltip />
-                <Line 
-                  type="monotone" 
-                  dataKey="calories" 
-                  stroke="#8884d8" 
+                <Line
+                  type="monotone"
+                  dataKey="calories"
+                  stroke="#8884d8"
                   strokeWidth={2}
                   dot={{ fill: '#8884d8' }}
                 />
@@ -344,13 +349,17 @@ export default function HealthInsights() {
           <ResponsiveContainer width="100%" height={200}>
             <LineChart data={currentData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey={timeframe === 'week' ? 'day' : 'date'} />
+              <XAxis
+                dataKey={timeframe === 'week' ? 'day' : 'date'}
+                minTickGap={timeframe === 'week' ? 10 : 30}
+                tick={{ fontSize: 10 }}
+              />
               <YAxis domain={['dataMin - 1', 'dataMax + 1']} />
               <Tooltip />
-              <Line 
-                type="monotone" 
-                dataKey="weight" 
-                stroke="#82ca9d" 
+              <Line
+                type="monotone"
+                dataKey="weight"
+                stroke="#82ca9d"
                 strokeWidth={2}
                 dot={{ fill: '#82ca9d' }}
               />
@@ -373,15 +382,14 @@ export default function HealthInsights() {
           </CardHeader>
           <CardContent className="space-y-4">
             {insights.map((insight, index) => (
-              <div 
-                key={index} 
-                className={`p-4 rounded-lg border ${
-                  insight.type === 'success' 
-                    ? 'bg-green-50 border-green-200' 
-                    : insight.type === 'warning'
+              <div
+                key={index}
+                className={`p-4 rounded-lg border ${insight.type === 'success'
+                  ? 'bg-green-50 border-green-200'
+                  : insight.type === 'warning'
                     ? 'bg-yellow-50 border-yellow-200'
                     : 'bg-blue-50 border-blue-200'
-                }`}
+                  }`}
               >
                 <h4 className="font-medium mb-1">{insight.title}</h4>
                 <p className="text-sm text-muted-foreground mb-2">{insight.message}</p>
