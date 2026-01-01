@@ -6,7 +6,7 @@ import { useMealStore } from '@/store/mealStore'
 import { aiService } from '@/lib/ai'
 import { cn, generateId } from '@/lib/utils'
 
-import { Search, Plus, Clock, Users, ChefHat, Loader2, Heart, X, Flame, Zap, BarChart3 } from 'lucide-react'
+import { Search, Plus, Minus, Clock, Users, ChefHat, Loader2, Heart, X, Flame, Zap, BarChart3 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -176,7 +176,7 @@ export default function RecipeFinder() {
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-5 duration-700">
       {/* Recipe Generator Header */}
-      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-primary p-12 text-white shadow-2xl">
+      <div className="relative overflow-hidden rounded-[2.5rem] gradient-primary p-12 text-white shadow-2xl">
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2" />
         <div className="relative z-10 max-w-lg">
           <div className="flex items-center gap-3 mb-6">
@@ -271,16 +271,38 @@ export default function RecipeFinder() {
                   <label className="text-sm font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                     <Users className="w-4 h-4 text-primary" /> Target Servings
                   </label>
-                  <div className="flex items-center gap-6">
-                    <input
-                      type="range"
-                      min="1"
-                      max="12"
-                      value={servings}
-                      onChange={(e) => setServings(parseInt(e.target.value))}
-                      className="flex-1 h-1.5 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
-                    />
-                    <div className="w-16 h-16 flex items-center justify-center rounded-2xl bg-primary/10 border border-primary/20 text-primary font-black text-2xl">
+                  <div className="flex items-center gap-4">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-10 w-10 rounded-xl border-primary/20 hover:bg-primary/5 hover:text-primary transition-all shadow-sm"
+                      onClick={() => setServings(Math.max(1, servings - 1))}
+                    >
+                      <Minus className="w-4 h-4" />
+                    </Button>
+
+                    <div className="flex-1 relative h-10 flex items-center group">
+                      <div className="absolute inset-0 h-2 my-auto bg-primary/20 rounded-full border border-primary/10 group-hover:bg-primary/30 transition-colors" />
+                      <input
+                        type="range"
+                        min="1"
+                        max="12"
+                        value={servings}
+                        onChange={(e) => setServings(parseInt(e.target.value))}
+                        className="relative z-10 w-full appearance-none bg-transparent cursor-pointer accent-primary"
+                      />
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-10 w-10 rounded-xl border-primary/20 hover:bg-primary/5 hover:text-primary transition-all shadow-sm"
+                      onClick={() => setServings(Math.min(12, servings + 1))}
+                    >
+                      <Plus className="w-4 h-4" />
+                    </Button>
+
+                    <div className="w-16 h-16 flex items-center justify-center rounded-2xl bg-primary/10 border border-primary/20 text-primary font-black text-2xl shadow-lg shadow-primary/5">
                       {servings}
                     </div>
                   </div>
@@ -348,121 +370,164 @@ export default function RecipeFinder() {
 
       {/* Recipe Detail Modal */}
       {selectedRecipe && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-2xl flex items-center justify-center p-4 z-[100] animate-in fade-in duration-300">
-          <Card className="max-w-4xl w-full max-h-[90vh] overflow-y-auto glass-panel border-0 shadow-[0_0_100px_rgba(0,0,0,0.5)] rounded-[3rem] p-0 custom-scrollbar relative">
-            <div className="sticky top-0 right-0 p-6 flex justify-end z-10 pointer-events-none">
+        <div className="fixed inset-0 bg-background/40 backdrop-blur-md flex items-center justify-center p-0 sm:p-4 z-[100] animate-in fade-in duration-300">
+          <div
+            className="absolute inset-0 z-0"
+            onClick={() => setSelectedRecipe(null)}
+          />
+
+          <Card className="relative z-10 w-full max-w-4xl h-full sm:h-auto sm:max-h-[90vh] overflow-hidden glass-panel border-0 shadow-[0_0_50px_rgba(0,0,0,0.1)] sm:rounded-[2.5rem] flex flex-col">
+            {/* Modal Header/Close */}
+            <div className="absolute top-4 right-4 z-20">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setSelectedRecipe(null)}
-                className="rounded-full bg-background/50 hover:bg-destructive hover:text-white transition-all pointer-events-auto shadow-xl"
+                className="rounded-full bg-background/80 backdrop-blur-md hover:bg-destructive hover:text-white transition-all shadow-lg border border-border/20"
               >
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5" />
               </Button>
             </div>
 
-            <CardContent className="p-12 pt-0 space-y-12">
-              {/* Header */}
-              <div className="text-center space-y-4">
-                <Badge className="px-4 py-1.5 rounded-full gradient-primary text-white font-black uppercase tracking-widest text-[10px] border-0 shadow-lg mb-4">
-                  {selectedRecipe.difficulty} Mastery
-                </Badge>
-                <h2 className="text-5xl font-black text-foreground tracking-tight leading-tight">
+            <div className="flex-1 overflow-y-auto custom-scrollbar">
+              {/* Hero Section */}
+              <div className="relative p-6 sm:p-10 pt-12 text-center space-y-6">
+                <div className="flex justify-center mb-2">
+                  <Badge className="px-4 py-1.5 rounded-full gradient-primary text-white font-black uppercase tracking-widest text-[10px] border-0 shadow-lg">
+                    {selectedRecipe.difficulty} Mastery
+                  </Badge>
+                </div>
+                <h2 className="text-3xl sm:text-5xl font-black text-foreground tracking-tight leading-tight px-4 italic">
                   {selectedRecipe.name}
                 </h2>
-                <p className="text-xl text-muted-foreground font-medium max-w-2xl mx-auto italic">
+                <p className="text-base sm:text-lg text-muted-foreground font-medium max-w-2xl mx-auto italic px-6">
                   &ldquo;{selectedRecipe.description}&rdquo;
                 </p>
-              </div>
 
-              {/* Quick Info Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[
-                  { label: 'Preparation', val: `${selectedRecipe.preparationTime}m`, icon: Clock },
-                  { label: 'Cooking', val: `${selectedRecipe.cookingTime}m`, icon: Flame },
-                  { label: 'Servings', val: selectedRecipe.servings, icon: Users },
-                  { label: 'Health Score', val: 'A+', icon: Zap }
-                ].map((stat, i) => (
-                  <div key={i} className="p-6 rounded-[2rem] bg-primary/5 flex flex-col items-center justify-center border border-primary/10">
-                    <stat.icon className="w-6 h-6 text-primary mb-3" />
-                    <span className="text-[10px] uppercase font-black text-muted-foreground tracking-widest mb-1">{stat.label}</span>
-                    <span className="text-xl font-black">{stat.val}</span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                {/* Ingredients */}
-                <div className="space-y-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-black">
-                      🛒
+                {/* Quick Info Grid */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mt-8">
+                  {[
+                    { label: 'Prep', val: `${selectedRecipe.preparationTime}m`, icon: Clock, color: 'text-blue-500' },
+                    { label: 'Cook', val: `${selectedRecipe.cookingTime}m`, icon: Flame, color: 'text-orange-500' },
+                    { label: 'Serves', val: selectedRecipe.servings, icon: Users, color: 'text-emerald-500' },
+                    { label: 'Rating', val: 'A+', icon: Zap, color: 'text-amber-500' }
+                  ].map((stat, i) => (
+                    <div key={i} className="p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] bg-background/40 border border-border/40 flex flex-col items-center justify-center shadow-sm">
+                      <stat.icon className={cn("w-5 h-5 sm:w-6 sm:h-6 mb-2 sm:mb-3", stat.color)} />
+                      <span className="text-[10px] uppercase font-black text-muted-foreground tracking-widest mb-1">{stat.label}</span>
+                      <span className="text-lg sm:text-xl font-black">{stat.val}</span>
                     </div>
-                    <h4 className="text-2xl font-black tracking-tight">The Essentials</h4>
+                  ))}
+                </div>
+              </div>
+
+              <div className="p-6 sm:p-10 pt-0 space-y-10 sm:space-y-16">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
+                  {/* Ingredients */}
+                  <div className="lg:col-span-5 space-y-6">
+                    <div className="flex items-center gap-3 border-l-4 border-emerald-500 pl-4">
+                      <h4 className="text-xl sm:text-2xl font-black tracking-tight">The Essentials</h4>
+                    </div>
+                    <div className="space-y-2">
+                      {selectedRecipe.ingredients.map((ingredient, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-muted/20 border border-transparent hover:border-primary/20 transition-all">
+                          <span className="font-bold text-sm sm:text-base flex items-center gap-3">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                            {ingredient.name}
+                          </span>
+                          <Badge variant="outline" className="font-black text-primary border-primary/20 bg-primary/5 text-[10px] sm:text-xs">
+                            {ingredient.amount} {ingredient.unit}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <ul className="space-y-3">
-                    {selectedRecipe.ingredients.map((ingredient, index) => (
-                      <li key={index} className="flex items-center justify-between p-4 rounded-2xl bg-muted/30 border border-transparent hover:border-primary/20 transition-all group">
-                        <span className="font-bold flex items-center gap-3">
-                          <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                          {ingredient.name}
-                        </span>
-                        <span className="font-black text-primary px-3 py-1 bg-primary/5 rounded-lg text-sm">
-                          {ingredient.amount} {ingredient.unit}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
+
+                  {/* Instructions */}
+                  <div className="lg:col-span-7 space-y-6">
+                    <div className="flex items-center gap-3 border-l-4 border-amber-500 pl-4">
+                      <h4 className="text-xl sm:text-2xl font-black tracking-tight">The Ritual</h4>
+                    </div>
+                    <div className="space-y-6">
+                      {selectedRecipe.instructions.map((instruction, index) => (
+                        <div key={index} className="flex gap-4 sm:gap-6 group">
+                          <div className="flex-none w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-background border-2 border-border/40 flex items-center justify-center font-black text-sm sm:text-base group-hover:border-primary group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
+                            {index + 1}
+                          </div>
+                          <p className="text-sm sm:text-base font-medium leading-relaxed text-foreground/90">
+                            {instruction}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
-                {/* Instructions */}
-                <div className="space-y-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center font-black">
-                      🔪
-                    </div>
-                    <h4 className="text-2xl font-black tracking-tight">The Ritual</h4>
+                {/* Nutrition Profile */}
+                <div className="pt-10 border-t border-border/40">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                    <h4 className="text-xl sm:text-2xl font-black tracking-tight flex items-center gap-3 italic">
+                      <BarChart3 className="w-6 h-6 text-primary" /> Nutrition Profile
+                    </h4>
+                    <span className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-widest bg-muted px-3 py-1 rounded-full">
+                      Standardized per serving
+                    </span>
                   </div>
-                  <div className="space-y-4">
-                    {selectedRecipe.instructions.map((instruction, index) => (
-                      <div key={index} className="flex gap-6 group">
-                        <div className="flex-none w-10 h-10 rounded-2xl bg-secondary flex items-center justify-center font-black text-lg group-hover:bg-primary group-hover:text-white transition-all">
-                          {index + 1}
-                        </div>
-                        <p className="text-base font-medium pt-2 leading-relaxed">
-                          {instruction}
-                        </p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-4">
+                    {[
+                      { l: 'Calories', v: selectedRecipe.nutrition.calories, c: 'text-foreground' },
+                      { l: 'Protein', v: `${selectedRecipe.nutrition.protein}g`, c: 'text-rose-500' },
+                      { l: 'Carbs', v: `${selectedRecipe.nutrition.carbs}g`, c: 'text-sky-500' },
+                      { l: 'Fat', v: `${selectedRecipe.nutrition.fat}g`, c: 'text-amber-500' },
+                      { l: 'Fiber', v: `${selectedRecipe.nutrition.fiber}g`, c: 'text-emerald-500' },
+                      { l: 'Sugar', v: `${selectedRecipe.nutrition.sugar}g`, c: 'text-orange-400' }
+                    ].map((nut, i) => (
+                      <div key={i} className="text-center p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-background/50 border border-border/40 shadow-sm hover-lift">
+                        <p className="text-[10px] font-black uppercase text-muted-foreground mb-1">{nut.l}</p>
+                        <p className={cn("text-base sm:text-lg font-black", nut.c)}>{nut.v}</p>
                       </div>
                     ))}
                   </div>
                 </div>
               </div>
+            </div>
 
-              {/* Nutrition Footer */}
-              <div className="pt-12 border-t border-border/40">
-                <div className="flex items-center justify-between mb-8">
-                  <h4 className="text-2xl font-black tracking-tight flex items-center gap-2">
-                    <BarChart3 className="w-6 h-6 text-primary" /> Nutrition Profile
-                  </h4>
-                  <span className="text-sm font-bold text-muted-foreground">Standardized per serving</span>
-                </div>
-                <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
-                  {[
-                    { l: 'Calories', v: selectedRecipe.nutrition.calories, c: 'text-foreground' },
-                    { l: 'Protein', v: `${selectedRecipe.nutrition.protein}g`, c: 'text-rose-500' },
-                    { l: 'Carbs', v: `${selectedRecipe.nutrition.carbs}g`, c: 'text-sky-500' },
-                    { l: 'Fat', v: `${selectedRecipe.nutrition.fat}g`, c: 'text-amber-500' },
-                    { l: 'Fiber', v: `${selectedRecipe.nutrition.fiber}g`, c: 'text-emerald-500' },
-                    { l: 'Sugar', v: `${selectedRecipe.nutrition.sugar}g`, c: 'text-rose-400' }
-                  ].map((nut, i) => (
-                    <div key={i} className="text-center p-4 rounded-2xl bg-muted/20 border border-border/20">
-                      <p className="text-[10px] font-black uppercase text-muted-foreground mb-1">{nut.l}</p>
-                      <p className={cn("text-lg font-black", nut.c)}>{nut.v}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </CardContent>
+            {/* Sticky Action Footer */}
+            <div className="p-4 sm:p-6 bg-background/80 backdrop-blur-xl border-t border-border/40 flex items-center gap-3">
+              <Button
+                onClick={() => {
+                  isRecipeSaved(selectedRecipe.id)
+                    ? handleUnsaveRecipe(selectedRecipe.id)
+                    : handleSaveRecipe(selectedRecipe);
+                }}
+                variant={isRecipeSaved(selectedRecipe.id) ? "default" : "outline"}
+                className={cn(
+                  "flex-1 h-12 sm:h-14 rounded-xl sm:rounded-2xl font-black text-sm sm:text-base transition-all",
+                  isRecipeSaved(selectedRecipe.id) ? "gradient-primary text-white" : "border-primary/20 hover:bg-primary/5 text-primary"
+                )}
+              >
+                {isRecipeSaved(selectedRecipe.id) ? (
+                  <>
+                    <Heart className="w-5 h-5 mr-2 fill-current" />
+                    SAVED TO COOKBOOK
+                  </>
+                ) : (
+                  <>
+                    <Heart className="w-5 h-5 mr-2" />
+                    SAVE RECIPE
+                  </>
+                )}
+              </Button>
+              <Button
+                className="flex-1 h-12 sm:h-14 rounded-xl sm:rounded-2xl gradient-primary text-white font-black text-sm sm:text-base shadow-xl shadow-primary/20"
+                onClick={() => {
+                  // Logic to add to meal plan can go here
+                  setSelectedRecipe(null);
+                }}
+              >
+                LOG AS MEAL
+              </Button>
+            </div>
           </Card>
         </div>
       )}

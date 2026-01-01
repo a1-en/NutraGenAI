@@ -290,6 +290,23 @@ export default function UserProfileForm({ onComplete }: UserProfileFormProps) {
                         value={level.value}
                         className="sr-only"
                       />
+
+                      {/* Selection indicator */}
+                      <div className="absolute top-4 right-4 flex items-center justify-center">
+                        <div className={cn(
+                          "w-6 h-6 rounded-full border-2 transition-all duration-300 flex items-center justify-center shadow-sm",
+                          watchedValues.activityLevel === level.value
+                            ? "border-primary bg-primary shadow-lg shadow-primary/40 scale-110"
+                            : "border-primary/40 bg-primary/5 group-hover:border-primary/60 group-hover:bg-primary/10"
+                        )}>
+                          {watchedValues.activityLevel === level.value ? (
+                            <div className="w-2.5 h-2.5 rounded-full bg-white shadow-sm animate-in zoom-in-50 duration-300" />
+                          ) : (
+                            <div className="w-1.5 h-1.5 rounded-full bg-primary/20 group-hover:bg-primary/40 transition-colors" />
+                          )}
+                        </div>
+                      </div>
+
                       <div className="flex items-center gap-3 mb-2">
                         <div className={cn(
                           "p-2 rounded-xl transition-colors",
@@ -301,12 +318,7 @@ export default function UserProfileForm({ onComplete }: UserProfileFormProps) {
                           {level.label}
                         </span>
                       </div>
-                      <p className="text-xs text-muted-foreground leading-relaxed">{level.description}</p>
-                      {watchedValues.activityLevel === level.value && (
-                        <div className="absolute top-4 right-4 text-primary animate-in fade-in zoom-in duration-300">
-                          <Check className="w-4 h-4" />
-                        </div>
-                      )}
+                      <p className="text-xs text-muted-foreground leading-relaxed pr-6">{level.description}</p>
                     </label>
                   );
                 })}
@@ -322,9 +334,9 @@ export default function UserProfileForm({ onComplete }: UserProfileFormProps) {
                   const isSelected = watchedValues.dietaryPreferences?.includes(option.value);
                   return (
                     <label key={option.value} className={cn(
-                      "flex items-center gap-2 p-3 border rounded-xl cursor-pointer transition-all duration-300",
+                      "flex items-center gap-2 p-3 border rounded-xl cursor-pointer transition-all duration-300 group",
                       isSelected
-                        ? 'border-primary bg-primary/5 text-primary scale-105 shadow-sm'
+                        ? 'border-primary bg-primary/5 text-primary shadow-sm'
                         : 'border-input hover:border-primary/30 hover:bg-muted/30 text-muted-foreground hover:text-foreground'
                     )}>
                       <input
@@ -333,9 +345,18 @@ export default function UserProfileForm({ onComplete }: UserProfileFormProps) {
                         onChange={() => toggleArrayValue(watchedValues.dietaryPreferences || [], option.value, 'dietaryPreferences')}
                         className="sr-only"
                       />
-                      <span className="text-lg grayscale-0">{option.emoji}</span>
-                      <span className="text-xs font-bold leading-none">{option.label}</span>
-                      {isSelected && <Check className="w-3.5 h-3.5 ml-auto text-primary animate-in zoom-in duration-300" />}
+
+                      <div className={cn(
+                        "w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all duration-300 shrink-0 shadow-sm",
+                        isSelected
+                          ? "bg-primary border-primary shadow-lg shadow-primary/40"
+                          : "border-primary/40 bg-primary/5 group-hover:border-primary/60 group-hover:bg-primary/10"
+                      )}>
+                        {isSelected && <Check className="w-3.5 h-3.5 text-white stroke-[4px] animate-in zoom-in-50 duration-300" />}
+                      </div>
+
+                      <span className="text-base grayscale-0">{option.emoji}</span>
+                      <span className="text-[10px] font-bold leading-tight">{option.label}</span>
                     </label>
                   );
                 })}
@@ -357,7 +378,7 @@ export default function UserProfileForm({ onComplete }: UserProfileFormProps) {
                   const isSelected = watchedValues.healthGoals?.includes(goal.value);
                   return (
                     <label key={goal.value} className={cn(
-                      "flex items-center gap-4 p-4 border rounded-2xl cursor-pointer transition-all duration-300",
+                      "flex items-center gap-4 p-4 border rounded-2xl cursor-pointer transition-all duration-300 group",
                       isSelected
                         ? 'border-primary bg-primary/5 shadow-md shadow-primary/10'
                         : 'border-input hover:border-primary/30 hover:bg-muted/30'
@@ -368,16 +389,28 @@ export default function UserProfileForm({ onComplete }: UserProfileFormProps) {
                         onChange={() => toggleArrayValue(watchedValues.healthGoals || [], goal.value, 'healthGoals')}
                         className="sr-only"
                       />
+
                       <div className={cn(
-                        "p-3 rounded-xl",
-                        isSelected ? "bg-primary text-white" : "bg-primary/10 text-primary"
+                        "p-3 rounded-xl transition-all duration-300",
+                        isSelected ? "bg-primary text-white shadow-lg shadow-primary/30 scale-110" : "bg-primary/10 text-primary group-hover:bg-primary/20"
                       )}>
                         <Icon className="w-5 h-5" />
                       </div>
-                      <span className={cn("font-bold", isSelected ? "text-primary text-lg" : "text-foreground")}>
-                        {goal.label}
-                      </span>
-                      {isSelected && <Check className="w-5 h-5 ml-auto text-primary animate-in zoom-in duration-300" />}
+
+                      <div className="flex flex-col">
+                        <span className={cn("font-bold transition-colors", isSelected ? "text-primary text-lg" : "text-foreground")}>
+                          {goal.label}
+                        </span>
+                      </div>
+
+                      <div className={cn(
+                        "w-7 h-7 rounded-xl border-2 ml-auto flex items-center justify-center transition-all duration-300 shadow-sm",
+                        isSelected
+                          ? "bg-primary border-primary shadow-lg shadow-primary/40 scale-110"
+                          : "border-primary/40 bg-primary/5 group-hover:border-primary/60 group-hover:bg-primary/10"
+                      )}>
+                        {isSelected && <Check className="w-4 h-4 text-white stroke-[4px] animate-in zoom-in-50 duration-300" />}
+                      </div>
                     </label>
                   );
                 })}
@@ -420,7 +453,7 @@ export default function UserProfileForm({ onComplete }: UserProfileFormProps) {
       <div className="absolute bottom-40 right-10 w-80 h-80 bg-primary/30 rounded-full blur-[150px] -z-10" />
 
       <Card className="w-full max-w-2xl glass-panel shadow-2xl border-0 overflow-hidden slide-in-up">
-        <CardHeader className="bg-gradient-primary text-white p-8 relative overflow-hidden group">
+        <CardHeader className="gradient-primary text-white p-8 relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2" />
 
           <div className="relative z-10">
