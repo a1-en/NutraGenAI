@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { useToastStore } from '@/store/toastStore'
 import type { Recipe } from '@/types'
 
 export default function RecipeFinder() {
@@ -29,8 +30,7 @@ export default function RecipeFinder() {
   const [currentIngredient, setCurrentIngredient] = useState('')
   const [servings, setServings] = useState(4)
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null)
-  const [showToast, setShowToast] = useState(false)
-  const [toastMessage, setToastMessage] = useState('')
+  const { addToast } = useToastStore()
 
   const { addFoodLog } = useMealStore()
 
@@ -54,9 +54,7 @@ export default function RecipeFinder() {
     }
 
     addFoodLog(foodLog)
-    setToastMessage(`${recipe.name} logged successfully!`)
-    setShowToast(true)
-    setTimeout(() => setShowToast(false), 3000)
+    addToast(`${recipe.name} logged successfully!`, 'success')
     setSelectedRecipe(null)
   }
 
@@ -205,18 +203,17 @@ export default function RecipeFinder() {
 
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-5 duration-700">
-      {/* Recipe Generator Header */}
-      <div className="relative overflow-hidden rounded-[2.5rem] gradient-primary p-12 text-white shadow-2xl">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2" />
+      <div className="relative overflow-hidden rounded-[2rem] gradient-primary p-8 text-white shadow-xl">
+        <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-[60px] -translate-y-1/2 translate-x-1/2" />
         <div className="relative z-10 max-w-lg">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-3 bg-white/20 backdrop-blur-lg rounded-2xl shadow-xl">
-              <ChefHat className="w-8 h-8" />
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2.5 bg-white/20 backdrop-blur-lg rounded-xl shadow-lg">
+              <ChefHat className="w-6 h-6" />
             </div>
-            <h1 className="text-4xl font-black tracking-tight italic">Flavor Lab</h1>
+            <h1 className="text-2xl font-black tracking-tight italic">Flavor Lab</h1>
           </div>
-          <h2 className="text-3xl font-black mb-4 leading-tight">What&apos;s in your fridge?</h2>
-          <p className="text-white/80 font-medium text-lg">
+          <h2 className="text-2xl font-black mb-2 leading-tight">What&apos;s in your fridge?</h2>
+          <p className="text-white/80 font-medium text-sm">
             Our AI Chef will transform your random ingredients into professional-grade healthy recipes.
           </p>
         </div>
@@ -559,15 +556,6 @@ export default function RecipeFinder() {
         </div>
       )}
 
-      {/* Toast Notification */}
-      {showToast && (
-        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[200] animate-in slide-in-from-bottom-5 fade-in duration-300">
-          <div className="bg-emerald-500 text-white px-8 py-4 rounded-2xl shadow-2xl font-black flex items-center gap-3">
-            <CheckCircle2 className="w-6 h-6" />
-            {toastMessage}
-          </div>
-        </div>
-      )}
     </div>
   )
 }

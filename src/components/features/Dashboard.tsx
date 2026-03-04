@@ -22,14 +22,55 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Button } from '@/components/ui/button'
-import { formatCalories, formatDate, calculateDailyCalories, calculateDailyWater } from '@/lib/utils'
+import { formatCalories, formatDate, calculateDailyCalories, calculateDailyWater, generateId } from '@/lib/utils'
 import { Logo } from '@/components/ui/logo'
+import { useToastStore } from '@/store/toastStore'
 import type { FoodLog } from '@/types'
 
 export default function Dashboard() {
   const { profile, currentStreak } = useUserStore()
-  const { foodLogs } = useMealStore()
+  const { foodLogs, addFoodLog } = useMealStore()
+  const { addToast } = useToastStore()
   const [isMounted, setIsMounted] = useState(false)
+
+  const handleAddWater = () => {
+    const waterLog: FoodLog = {
+      id: generateId(),
+      userId: profile?.id || 'guest',
+      date: new Date(),
+      mealType: 'snack',
+      food: {
+        id: 'water-id',
+        name: 'Water',
+        category: 'beverages',
+        nutrition: {
+          calories: 0,
+          protein: 0,
+          carbs: 0,
+          fat: 0,
+          fiber: 0,
+          sugar: 0,
+          sodium: 0
+        },
+        servingSize: '250ml',
+        servingWeight: 250
+      },
+      quantity: 1,
+      nutrition: {
+        calories: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+        fiber: 0,
+        sugar: 0,
+        sodium: 0
+      },
+      loggedAt: new Date()
+    }
+
+    addFoodLog(waterLog)
+    addToast('Added 250ml of water!', 'success')
+  }
 
   useEffect(() => {
     setIsMounted(true)
@@ -167,9 +208,20 @@ export default function Dashboard() {
             </div>
             <div>
               <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">Water Intake</p>
-              <div className="flex items-baseline gap-1">
-                <p className="text-3xl font-black text-foreground tracking-tighter">{(waterIntake / 1000).toFixed(1)}L</p>
-                <span className="text-sm font-bold text-muted-foreground">/ {(targetWater / 1000).toFixed(1)}L</span>
+              <div className="flex items-center justify-between">
+                <div className="flex items-baseline gap-1">
+                  <p className="text-3xl font-black text-foreground tracking-tighter">{(waterIntake / 1000).toFixed(1)}L</p>
+                  <span className="text-sm font-bold text-muted-foreground">/ {(targetWater / 1000).toFixed(1)}L</span>
+                </div>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-8 w-8 rounded-full p-0 bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white transition-all"
+                  onClick={handleAddWater}
+                  title="Add 250ml Water"
+                >
+                  <Plus className="w-4 h-4" />
+                </Button>
               </div>
             </div>
             <Progress value={waterProgress} className="mt-5 h-2 bg-blue-500/10" indicatorClassName="bg-blue-500" />
@@ -242,46 +294,61 @@ export default function Dashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent className="p-6">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              <div className="p-5 rounded-2xl bg-primary/5 hover:bg-primary/10 transition-all border border-primary/10 group">
-                <div className="flex justify-between items-end mb-3">
-                  <span className="font-bold text-xs text-primary uppercase tracking-widest">Protein</span>
-                  <span className="text-2xl font-black group-hover:scale-110 transition-transform">{totalNutrition.protein}g</span>
+            {todaysLogs.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div className="p-5 rounded-2xl bg-primary/5 hover:bg-primary/10 transition-all border border-primary/10 group">
+                  <div className="flex justify-between items-end mb-3">
+                    <span className="font-bold text-xs text-primary uppercase tracking-widest">Protein</span>
+                    <span className="text-2xl font-black group-hover:scale-110 transition-transform">{totalNutrition.protein}g</span>
+                  </div>
+                  <Progress
+                    value={(totalNutrition.protein / macroTargets.protein) * 100}
+                    className="h-2 bg-background/50"
+                    indicatorClassName="bg-primary"
+                  />
+                  <p className="text-[10px] text-muted-foreground mt-2 text-right font-black uppercase">Goal: {macroTargets.protein}g</p>
                 </div>
-                <Progress
-                  value={(totalNutrition.protein / macroTargets.protein) * 100}
-                  className="h-2 bg-background/50"
-                  indicatorClassName="bg-primary"
-                />
-                <p className="text-[10px] text-muted-foreground mt-2 text-right font-black uppercase">Goal: {macroTargets.protein}g</p>
-              </div>
 
-              <div className="p-5 rounded-2xl bg-blue-500/5 hover:bg-blue-500/10 transition-all border border-blue-500/10 group">
-                <div className="flex justify-between items-end mb-3">
-                  <span className="font-bold text-xs text-blue-500 uppercase tracking-widest">Carbs</span>
-                  <span className="text-2xl font-black group-hover:scale-110 transition-transform">{totalNutrition.carbs}g</span>
+                <div className="p-5 rounded-2xl bg-blue-500/5 hover:bg-blue-500/10 transition-all border border-blue-500/10 group">
+                  <div className="flex justify-between items-end mb-3">
+                    <span className="font-bold text-xs text-blue-500 uppercase tracking-widest">Carbs</span>
+                    <span className="text-2xl font-black group-hover:scale-110 transition-transform">{totalNutrition.carbs}g</span>
+                  </div>
+                  <Progress
+                    value={(totalNutrition.carbs / macroTargets.carbs) * 100}
+                    className="h-2 bg-background/50"
+                    indicatorClassName="bg-blue-500"
+                  />
+                  <p className="text-[10px] text-muted-foreground mt-2 text-right font-black uppercase">Goal: {macroTargets.carbs}g</p>
                 </div>
-                <Progress
-                  value={(totalNutrition.carbs / macroTargets.carbs) * 100}
-                  className="h-2 bg-background/50"
-                  indicatorClassName="bg-blue-500"
-                />
-                <p className="text-[10px] text-muted-foreground mt-2 text-right font-black uppercase">Goal: {macroTargets.carbs}g</p>
-              </div>
 
-              <div className="p-5 rounded-2xl bg-amber-500/5 hover:bg-amber-500/10 transition-all border border-amber-500/10 group">
-                <div className="flex justify-between items-end mb-3">
-                  <span className="font-bold text-xs text-amber-500 uppercase tracking-widest">Fat</span>
-                  <span className="text-2xl font-black group-hover:scale-110 transition-transform">{totalNutrition.fat}g</span>
+                <div className="p-5 rounded-2xl bg-amber-500/5 hover:bg-amber-500/10 transition-all border border-amber-500/10 group">
+                  <div className="flex justify-between items-end mb-3">
+                    <span className="font-bold text-xs text-amber-500 uppercase tracking-widest">Fat</span>
+                    <span className="text-2xl font-black group-hover:scale-110 transition-transform">{totalNutrition.fat}g</span>
+                  </div>
+                  <Progress
+                    value={(totalNutrition.fat / macroTargets.fat) * 100}
+                    className="h-2 bg-background/50"
+                    indicatorClassName="bg-amber-500"
+                  />
+                  <p className="text-[10px] text-muted-foreground mt-2 text-right font-black uppercase">Goal: {macroTargets.fat}g</p>
                 </div>
-                <Progress
-                  value={(totalNutrition.fat / macroTargets.fat) * 100}
-                  className="h-2 bg-background/50"
-                  indicatorClassName="bg-amber-500"
-                />
-                <p className="text-[10px] text-muted-foreground mt-2 text-right font-black uppercase">Goal: {macroTargets.fat}g</p>
               </div>
-            </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-10 space-y-4 border-2 border-dashed border-border/40 rounded-3xl bg-muted/5">
+                <div className="p-4 bg-primary/10 rounded-full text-primary">
+                  <ChefHat className="w-8 h-8" />
+                </div>
+                <div className="text-center">
+                  <p className="font-bold text-lg">No nutrition data for today</p>
+                  <p className="text-sm text-muted-foreground max-w-[250px] mx-auto">Start logging your meals to see your daily macro breakdown.</p>
+                </div>
+                <Button size="sm" variant="outline" className="rounded-xl font-bold" asChild>
+                  <Link href="/food-log">Log Today's First Meal</Link>
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
 

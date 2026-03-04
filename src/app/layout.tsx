@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { ToastContainer } from "@/components/ui/toast";
 
 // Optimize font loading to prevent unused preload warnings
 const inter = Inter({
@@ -58,6 +59,7 @@ export default function RootLayout({
           <div className="relative flex min-h-screen flex-col bg-background text-foreground">
             {children}
           </div>
+          <ToastContainer />
         </ThemeProvider>
       </body>
     </html>

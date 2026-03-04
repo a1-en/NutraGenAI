@@ -256,7 +256,7 @@ export default function MealPlanGenerator({ onPlanGenerated }: MealPlanGenerator
                 <span className="ml-2 font-medium">{formatCalories(selectedCalorieTarget)}</span>
               </div>
               <div>
-                <span className="text-muted-foreground">Estimated Daily:</span>
+                <span className="text-muted-foreground">Estimated Meals:</span>
                 <span className="ml-2 font-medium">{formatCalories(calculateEstimatedCalories())}</span>
               </div>
               <div>
@@ -266,6 +266,12 @@ export default function MealPlanGenerator({ onPlanGenerated }: MealPlanGenerator
                 </span>
               </div>
             </div>
+            {selectedCalorieTarget > calculateEstimatedCalories() + 200 && (
+              <p className="mt-3 text-[10px] text-amber-600 font-bold uppercase tracking-wider bg-amber-500/10 p-2 rounded-lg flex items-center gap-2">
+                <Sparkles className="w-3 h-3" />
+                Note: AI will scale portions to meet your {formatCalories(selectedCalorieTarget)} goal
+              </p>
+            )}
           </div>
 
           {/* Generate Button */}

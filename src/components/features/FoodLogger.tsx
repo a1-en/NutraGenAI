@@ -9,7 +9,7 @@ import { Camera, Search, Plus, Loader2, X } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useToastStore } from '@/store/toastStore'
 import type { FoodLog, MealType, Food, NutritionInfo } from '@/types'
 
 interface FoodLoggerProps {
@@ -19,6 +19,7 @@ interface FoodLoggerProps {
 export default function FoodLogger({ onClose }: FoodLoggerProps) {
   const { profile } = useUserStore()
   const { addFoodLog } = useMealStore()
+  const { addToast } = useToastStore()
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [mealType, setMealType] = useState<MealType>('breakfast')
   const [foodInput, setFoodInput] = useState('')
@@ -40,6 +41,7 @@ export default function FoodLogger({ onClose }: FoodLoggerProps) {
       setAnalyzedFood(result)
     } catch (error) {
       console.error('Error analyzing food:', error)
+      addToast('Failed to analyze food description. Please try again.', 'error')
     } finally {
       setIsAnalyzing(false)
     }
@@ -57,6 +59,7 @@ export default function FoodLogger({ onClose }: FoodLoggerProps) {
       setFoodInput(result.foodName)
     } catch (error) {
       console.error('Error analyzing image:', error)
+      addToast('Failed to analyze image. Please try again.', 'error')
     } finally {
       setIsAnalyzing(false)
     }
@@ -106,6 +109,7 @@ export default function FoodLogger({ onClose }: FoodLoggerProps) {
     }
 
     addFoodLog(foodLog)
+    addToast(`${food.name} added to your ${mealType}!`, 'success')
 
     setFoodInput('')
     setAnalyzedFood(null)
@@ -168,12 +172,18 @@ export default function FoodLogger({ onClose }: FoodLoggerProps) {
               <Button
                 onClick={handleTextInput}
                 disabled={isAnalyzing || !foodInput.trim()}
-                className="rounded-xl h-auto px-6 gradient-primary"
+                className="rounded-xl h-auto px-6 gradient-primary font-bold gap-2"
               >
                 {isAnalyzing ? (
-                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <span>Analyzing...</span>
+                  </>
                 ) : (
-                  <Search className="h-5 w-5" />
+                  <>
+                    <Search className="h-5 w-5" />
+                    <span>Analyze</span>
+                  </>
                 )}
               </Button>
             </div>

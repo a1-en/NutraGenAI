@@ -252,12 +252,18 @@ export default function AICoach() {
             <Button
               onClick={() => handleSendMessage()}
               disabled={isLoading || !inputMessage.trim()}
-              className="rounded-xl h-12 w-12 flex-shrink-0 gradient-primary shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all"
+              className="rounded-xl h-12 px-6 flex-shrink-0 gradient-primary shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all font-bold gap-2"
             >
               {isLoading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>...</span>
+                </>
               ) : (
-                <Send className="w-5 h-5" />
+                <>
+                  <Send className="w-5 h-5" />
+                  <span>Send</span>
+                </>
               )}
             </Button>
           </div>
